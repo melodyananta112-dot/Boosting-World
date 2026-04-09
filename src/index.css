@@ -11,8 +11,11 @@
 }
 
 @layer base {
-  body {
+  html, body {
     @apply bg-[#030303] text-white font-sans;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
 }
 

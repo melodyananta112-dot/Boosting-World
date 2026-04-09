@@ -22,7 +22,7 @@ export default function App() {
       <Router>
         <WelcomeModal />
         <FloatingWhatsApp />
-        <div className="min-h-screen flex flex-col boost-bg">
+        <div className="min-h-screen flex flex-col boost-bg overflow-x-hidden">
           <Navbar />
           
           {/* Scrolling Marquee */}
@@ -38,7 +38,7 @@ export default function App() {
             </div>
           </div>
           
-          <main className="flex-grow">
+          <main className="flex-grow overflow-x-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
               <div className="lg:grid lg:grid-cols-12 lg:gap-12">
                 <div className="lg:col-span-8">

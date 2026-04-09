@@ -40,7 +40,7 @@ const FloatingWhatsApp: React.FC = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute bottom-20 right-0 w-[350px] bg-[#1a1a1a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl"
+            className="absolute bottom-20 right-0 w-[calc(100vw-2rem)] sm:w-[350px] bg-[#1a1a1a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl"
           >
             {/* Header */}
             <div className="bg-[#25D366] p-6 flex items-center justify-between">

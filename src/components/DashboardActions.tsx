@@ -67,7 +67,7 @@ export default function DashboardActions() {
           className="relative group"
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-[#39FF14] to-gold rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-          <div className="relative flex flex-col md:flex-row items-center justify-between p-8 rounded-[2.5rem] bg-black border border-white/10 overflow-hidden">
+          <div className="relative flex flex-col md:flex-row items-center justify-between p-6 md:p-8 rounded-[2.5rem] bg-black border border-white/10 overflow-hidden">
             <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-[#39FF14]/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-gold/10 rounded-full blur-3xl"></div>
             
@@ -191,7 +191,7 @@ export default function DashboardActions() {
                     navigate(action.link);
                   }
                 }}
-            className={`w-full flex flex-col items-center justify-center p-8 rounded-[2.5rem] bg-gradient-to-br ${action.color} ${action.textColor} shadow-2xl transition-all duration-500 h-full border border-white/10 ${action.title === 'Deposit' ? 'scale-110 ring-4 ring-gold/40 shadow-gold/30 z-20' : 'hover:scale-105'}`}
+            className={`w-full flex flex-col items-center justify-center p-6 md:p-8 rounded-[2.5rem] bg-gradient-to-br ${action.color} ${action.textColor} shadow-2xl transition-all duration-500 h-full border border-white/10 ${action.title === 'Deposit' ? 'scale-110 ring-4 ring-gold/40 shadow-gold/30 z-20' : 'hover:scale-105'}`}
               >
                 <div className="mb-3 p-3 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:scale-110 transition-transform">
                   {action.icon}
