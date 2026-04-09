@@ -119,10 +119,18 @@ const Navbar: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="flex items-center space-x-2 p-2.5 text-gray-400 hover:text-gold transition-all duration-300 group">
-                <LogIn className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                <span className="hidden sm:inline text-sm font-bold uppercase tracking-widest">Login</span>
-              </Link>
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <Link to="/login" className="flex items-center space-x-2 p-2.5 text-gray-400 hover:text-gold transition-all duration-300 group">
+                  <LogIn className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                  <span className="hidden sm:inline text-sm font-bold uppercase tracking-widest">Login</span>
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="bg-gold text-black px-6 py-2.5 rounded-xl text-[12px] font-black uppercase tracking-widest hover:shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-all active:scale-95"
+                >
+                  Join Now
+                </Link>
+              </div>
             )}
 
             {user && (

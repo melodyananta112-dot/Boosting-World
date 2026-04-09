@@ -40,8 +40,8 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/');
     } catch (err: any) {
-      if (err.code === 'auth/user-not-found') {
-        setError('এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি।');
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+        setError('ভুল ইমেইল অথবা পাসওয়ার্ড! আপনার কি কোনো অ্যাকাউন্ট নেই? তবে নিচে "Create an account" এ ক্লিক করুন।');
       } else if (err.code === 'auth/wrong-password') {
         setError('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
       } else if (err.code === 'auth/operation-not-allowed') {
