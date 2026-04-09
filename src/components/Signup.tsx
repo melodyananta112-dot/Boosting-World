@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { auth, googleProvider, db } from '../firebase';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
@@ -26,6 +26,36 @@ export default function Signup() {
       navigate(from, { replace: true });
     }
   }, [user, authLoading, navigate, location]);
+
+  // Handle Redirect Result
+  useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const user = result.user;
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName || '',
+              createdAt: new Date().toISOString(),
+              balance: 0,
+              role: 'user'
+            });
+          }
+          navigate('/');
+        }
+      } catch (err: any) {
+        console.error('Redirect Result Error:', err);
+        setError('গুগল সাইনআপ ব্যর্থ হয়েছে: ' + err.message);
+      }
+    };
+    handleRedirect();
+  }, [navigate]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,8 +103,24 @@ export default function Signup() {
   const handleGoogleLogin = async () => {
     setError('');
     setGoogleLoading(true);
+
+    // Ensure account picker is shown
+    googleProvider.setCustomParameters({ 
+      prompt: 'select_account',
+      auth_type: 'reauthenticate' 
+    });
+
     try {
-      // Try popup first
+      // For mobile devices and in-app browsers, redirect is much more reliable
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isInApp = /FBAN|FBAV|WhatsApp|Instagram|Messenger/i.test(navigator.userAgent);
+
+      if (isMobile || isInApp) {
+        await signInWithRedirect(auth, googleProvider);
+        return; // Execution stops here as page redirects
+      }
+
+      // Try popup for desktop
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       
