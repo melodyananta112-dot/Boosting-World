@@ -57,10 +57,26 @@ export default function Login() {
       } catch (err: any) {
         console.error('Redirect Result Error:', err);
         setError('গুগল লগইন ব্যর্থ হয়েছে: ' + err.message);
+        // Clear the auto-login flag so user can try again manually if needed
+        sessionStorage.removeItem('tried_auto_google');
       }
     };
     handleRedirect();
   }, [navigate]);
+
+  // Auto-trigger Google Login
+  useEffect(() => {
+    const triggerAutoLogin = async () => {
+      if (!authLoading && !user && !googleLoading && !loading) {
+        const hasTriedAuto = sessionStorage.getItem('tried_auto_google');
+        if (!hasTriedAuto) {
+          sessionStorage.setItem('tried_auto_google', 'true');
+          handleGoogleLogin();
+        }
+      }
+    };
+    triggerAutoLogin();
+  }, [authLoading, user, googleLoading, loading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,9 +237,11 @@ export default function Login() {
               </span>
             </div>
             <h2 className="text-4xl font-display font-black text-white mb-3 tracking-tight drop-shadow-[0_0_10px_rgba(57,255,20,0.5)]">
-              Welcome <span className="text-[#39FF14]">Back</span>
+              {googleLoading ? 'Connecting...' : 'Secure Login'}
             </h2>
-            <p className="text-gray-400 font-medium">Access your <span className="text-gold">Boosting World</span> dashboard</p>
+            <p className="text-gray-400 font-medium">
+              {googleLoading ? 'Redirecting to Google Secure Login' : 'Access your Boosting World dashboard'}
+            </p>
           </div>
 
           {error && (
@@ -237,97 +255,73 @@ export default function Login() {
             </motion.div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-[#39FF14]/70 uppercase tracking-widest ml-1">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#39FF14] transition-colors" size={20} />
-                <input
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#39FF14]/50 focus:bg-[#39FF14]/5 transition-all duration-300"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-bold text-[#39FF14]/70 uppercase tracking-widest">Password</label>
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    console.log('Forgot password clicked');
-                    setShowForgotModal(true);
-                  }}
-                  className="text-[11px] font-bold text-[#39FF14] uppercase tracking-wider hover:text-white transition-colors cursor-pointer relative z-50"
-                >
-                  Forgot?
-                </button>
-              </div>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#39FF14] transition-colors" size={20} />
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#39FF14]/50 focus:bg-[#39FF14]/5 transition-all duration-300"
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-[#39FF14] to-[#059669] text-black font-black py-4.5 rounded-2xl hover:shadow-[0_0_30px_rgba(57,255,20,0.4)] hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 uppercase tracking-widest text-sm mt-4"
-            >
-              {loading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                  <span>Authenticating...</span>
-                </div>
-              ) : 'Login to Account'}
-            </button>
-          </form>
-
-          <div className="mt-10">
-            <div className="relative mb-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
-              </div>
-              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]">
-                <span className="px-4 bg-black/40 backdrop-blur-xl text-gray-500">Quick Access</span>
-              </div>
-            </div>
-
+          <div className="space-y-6">
             <button
               onClick={handleGoogleLogin}
               disabled={googleLoading || loading}
-              className="w-full flex items-center justify-center space-x-3 bg-white/5 border border-[#39FF14]/20 text-white py-4 rounded-2xl hover:bg-[#39FF14]/10 hover:border-[#39FF14]/50 transition-all duration-300 group disabled:opacity-50 cursor-pointer relative z-10 shadow-[0_0_15px_rgba(57,255,20,0.1)] hover:shadow-[0_0_25px_rgba(57,255,20,0.2)]"
+              className="w-full flex items-center justify-center space-x-3 bg-white/5 border border-[#39FF14]/20 text-white py-5 rounded-2xl hover:bg-[#39FF14]/10 hover:border-[#39FF14]/50 transition-all duration-300 group disabled:opacity-50 cursor-pointer relative z-10 shadow-[0_0_20px_rgba(57,255,20,0.15)] hover:shadow-[0_0_35px_rgba(57,255,20,0.3)]"
             >
               {googleLoading ? (
-                <div className="flex items-center space-x-2 pointer-events-none">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span className="text-sm font-bold">Connecting...</span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span className="text-lg font-black uppercase tracking-widest">Redirecting...</span>
                 </div>
               ) : (
-                <div className="flex items-center justify-center space-x-3 pointer-events-none">
-                  <Chrome size={20} className="group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold tracking-wide">Connect with Google</span>
+                <div className="flex items-center justify-center space-x-4">
+                  <Chrome size={24} className="group-hover:scale-110 transition-transform text-[#39FF14]" />
+                  <span className="text-lg font-black uppercase tracking-widest">Connect with Google</span>
                 </div>
               )}
             </button>
 
-            <p className="mt-10 text-center text-gray-500 text-sm font-medium relative z-10">
-              New to the platform?{' '}
-              <Link to="/signup" className="text-gold font-bold hover:text-white transition-colors underline underline-offset-4 decoration-gold/30 cursor-pointer">
-                Create an account
-              </Link>
-            </p>
+            <div className="relative py-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/5"></div>
+              </div>
+              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.3em]">
+                <span className="px-4 bg-black/20 text-gray-600">Secure Authentication</span>
+              </div>
+            </div>
+
+            {/* Hidden/Secondary Email Login */}
+            <details className="group">
+              <summary className="text-center text-[10px] font-black text-gray-500 uppercase tracking-widest cursor-pointer hover:text-gold transition-colors list-none">
+                Show more options
+              </summary>
+              <div className="mt-6 space-y-5">
+                <div className="space-y-2">
+                  <div className="relative group">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#39FF14] transition-colors" size={20} />
+                    <input
+                      type="email"
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#39FF14]/50 transition-all"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="relative group">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#39FF14] transition-colors" size={20} />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#39FF14]/50 transition-all"
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogin}
+                  disabled={loading}
+                  className="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-2xl hover:bg-white/10 transition-all uppercase tracking-widest text-xs"
+                >
+                  Login with Email
+                </button>
+              </div>
+            </details>
           </div>
         </div>
       </motion.div>
